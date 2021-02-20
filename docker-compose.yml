@@ -1,0 +1,28 @@
+version: '3' #docker-compose version
+
+volumes: #docker volumeの作成
+  db-data:
+
+services:
+  web: #name（任意、webやappがよく使われる）
+    build: .
+    ports:
+      - '3000:3000'
+    volumes:
+      - '.:/product-register' #違うPCでも使えるように相対path
+    environment: 
+      - 'DATABASE_PASSWORD=postgres'
+    tty: true #-itのt
+    stdin_open: true #-itのi
+    depends_on: #依存関係、先に指定先を構築させる
+      - db
+    links:
+      - db
+  
+  db:
+    image: postgres #postgresのimageを取ってくる
+    environment: 
+      - 'POSTGRES_USER=postgres'
+      - 'POSTGRES_PASSWORD=postgres'
+    volumes: #docker volumneにデータを保存
+      - 'db-data:/var/lib/postgresql/data'
